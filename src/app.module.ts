@@ -3,6 +3,9 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
+import { BookModule } from './book/book.module';
 
 @Module({
   imports: [
@@ -17,6 +20,9 @@ import { AppService } from './app.service';
       autoLoadEntities: true,
       synchronize: true,
     }),
+    UserModule,
+    AuthModule,
+    BookModule,
   ],
   controllers: [AppController],
   providers: [AppService],
