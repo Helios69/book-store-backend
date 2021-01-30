@@ -5,19 +5,24 @@ import { compare, hash } from 'bcrypt';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { TokenPayload } from './token-payload.interface';
 import { UserService } from 'src/user/user.service';
-import { Roles } from 'src/user/roles.enum';
+import { Role } from 'src/user/roles.enum';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UserService,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
   ) {}
 
   public async register(createUserDto: CreateUserDto) {
     const hashedPassword = await hash(createUserDto.password, 10);
     try {
+      if (!createUserDto.firstName || !createUserDto.lastName) {
+        throw new HttpException(
+          'All fields must be provided',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
       const createdUser = await this.usersService.create({
         ...createUserDto,
         password: hashedPassword,
@@ -52,7 +57,7 @@ export class AuthService {
     }
   }
 
-  public getJwtToken(userId: number, userRole: Roles) {
+  public getJwtToken(userId: number, userRole: Role) {
     const payload: TokenPayload = { userId, role: userRole };
     return this.jwtService.sign(payload);
   }

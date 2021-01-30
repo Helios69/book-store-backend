@@ -15,6 +15,17 @@ export class UserService {
     return await this.usersRepository.find();
   }
 
+  async getById(id: number): Promise<User> {
+    const user = await this.usersRepository.findOne(id);
+    if (user) {
+      return user;
+    }
+    throw new HttpException(
+      'User with this id does not exist',
+      HttpStatus.NOT_FOUND,
+    );
+  }
+
   async getByEmail(email: string): Promise<User> {
     const user = await this.usersRepository.findOne({ email });
     if (user) {
@@ -30,5 +41,17 @@ export class UserService {
     const newUser = this.usersRepository.create(userData);
     await this.usersRepository.save(newUser);
     return newUser;
+  }
+
+  async removeUser(id: number) {
+    const user = await this.usersRepository.findOne(id);
+    if (!user) {
+      throw new HttpException(
+        'User with this id does not exist',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    await this.usersRepository.remove(user);
+    return user;
   }
 }
